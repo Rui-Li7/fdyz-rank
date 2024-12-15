@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Table("teacher")
 public class Teacher {
-    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
+    @Id
     private long id;
     private long globalId;
     private boolean isMale;

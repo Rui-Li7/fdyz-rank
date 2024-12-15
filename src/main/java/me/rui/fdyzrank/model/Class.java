@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Table("class")
 public class Class {
-    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
+    @Id
     private long id;
     private Grade grade;
     private int order;

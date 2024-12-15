@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Table("user")
 public class User {
-    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
+    @Id
     private long id;
     private String nickname;
 }
