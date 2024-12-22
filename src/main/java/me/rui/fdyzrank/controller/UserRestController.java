@@ -1,5 +1,6 @@
 package me.rui.fdyzrank.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSONObject;
@@ -43,6 +44,7 @@ public class UserRestController {
         result.put("success", true);
         result.put("msg", "回答正确");
         result.put("body", user);
+        StpUtil.login(user.getId());
 
         return result;
     }
