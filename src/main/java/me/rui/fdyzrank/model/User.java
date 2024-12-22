@@ -12,4 +12,5 @@ public class User {
     @Id
     private long id;
     private String nickname;
+    private String role;
 }
