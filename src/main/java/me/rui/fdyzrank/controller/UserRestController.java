@@ -7,6 +7,7 @@ import com.alibaba.fastjson2.JSONObject;
 import me.rui.fdyzrank.FdyzRankConfig;
 import me.rui.fdyzrank.mapper.UserMapper;
 import me.rui.fdyzrank.model.User;
+import me.rui.fdyzrank.model.table.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +47,36 @@ public class UserRestController {
         result.put("body", user);
         StpUtil.login(user.getId());
 
+        return result;
+    }
+
+    @RequestMapping("/changeNickname")
+    public JSONObject changeNickname(@RequestParam String newName) {
+        JSONObject result = new JSONObject();
+
+        if (newName == null || newName.isEmpty()) {
+            result.put("success", false);
+            result.put("msg", "昵称不能为空");
+            return result;
+        }
+
+        if (!StpUtil.isLogin()) {
+            result.put("success", false);
+            result.put("msg", "未登录");
+            return result;
+        }
+
+        if (userMapper.selectOneByCondition(Tables.USER.NICKNAME.eq(newName)) != null) {
+            result.put("success", false);
+            result.put("nsg", "昵称重复");
+            return result;
+        }
+
+        User user = userMapper.selectOneById(StpUtil.getLoginIdAsLong());
+        user.setNickname(newName);
+        userMapper.update(user);
+        result.put("success", true);
+        result.put("msg", "修改成功");
         return result;
     }
 }
