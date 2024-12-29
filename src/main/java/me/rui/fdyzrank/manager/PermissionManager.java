@@ -25,7 +25,11 @@ public class PermissionManager implements StpInterface {
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
+        Permission permission = new Permission(Long.parseLong((String) loginId), "user.*");
         List<Permission> permissions = permissionMapper.selectListByCondition(Tables.PERMISSION.USER_ID.eq(loginId));
+        if (!permissions.contains(permission)) {
+            permissions.add(permission);
+        }
         return permissions.stream().map(Permission::getPermission).toList();
     }
 
