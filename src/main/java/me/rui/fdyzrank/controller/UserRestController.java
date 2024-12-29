@@ -41,6 +41,7 @@ public class UserRestController {
         User user = new User();
         user.setId(IdUtil.getSnowflakeNextId());
         user.setNickname(RandomUtil.randomString(10));
+        user.setRole("user");
         userMapper.insert(user);
         result.put("success", true);
         result.put("msg", "回答正确");
