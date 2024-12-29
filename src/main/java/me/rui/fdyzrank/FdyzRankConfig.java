@@ -10,4 +10,5 @@ import org.springframework.stereotype.Component;
 public class FdyzRankConfig {
     private String answer;
     private String adminKey;
+    private long adminId;
 }

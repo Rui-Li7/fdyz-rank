@@ -38,6 +38,13 @@ public class UserRestController {
             return result;
         }
 
+        if (globalConfig.getAdminKey().equals(answer)) {
+            result.put("success", true);
+            result.put("msg", "进入管理员账号");
+            StpUtil.login(globalConfig.getAdminId());
+            return result;
+        }
+
         User user = new User();
         user.setId(IdUtil.getSnowflakeNextId());
         user.setNickname(RandomUtil.randomString(10));
