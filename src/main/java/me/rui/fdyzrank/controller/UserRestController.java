@@ -72,6 +72,12 @@ public class UserRestController {
             return result;
         }
 
+        if (newName.length() > 10) {
+            result.put("success", false);
+            result.put("msg","长度超过10");
+            return result;
+        }
+
         User user = userMapper.selectOneById(StpUtil.getLoginIdAsLong());
         user.setNickname(newName);
         userMapper.update(user);
