@@ -9,4 +9,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "fdyz-rank")
 public class FdyzRankConfig {
     private String answer;
+    private String adminKey;
 }
