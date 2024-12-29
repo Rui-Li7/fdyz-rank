@@ -1,3 +1,4 @@
+use fdyz_rank;
 create table class
 (
     id      bigint unsigned              not null
