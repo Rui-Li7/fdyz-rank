@@ -76,7 +76,7 @@ public class UserRestController {
 
         if (userMapper.selectOneByCondition(Tables.USER.NICKNAME.eq(newName)) != null) {
             result.put("success", false);
-            result.put("nsg", "昵称重复");
+            result.put("msg", "昵称重复");
             return result;
         }
 
