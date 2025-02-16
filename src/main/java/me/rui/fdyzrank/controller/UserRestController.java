@@ -1,9 +1,13 @@
 package me.rui.fdyzrank.controller;
 
+import cn.dev33.satoken.annotation.SaCheckDisable;
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSONObject;
+import lombok.SneakyThrows;
 import me.rui.fdyzrank.FdyzRankConfig;
 import me.rui.fdyzrank.mapper.UserMapper;
 import me.rui.fdyzrank.model.User;
@@ -13,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.FileAlreadyExistsException;
+import java.security.InvalidParameterException;
+import java.security.KeyException;
 import java.util.Objects;
 
 @RestController
@@ -27,15 +34,14 @@ public class UserRestController {
         this.globalConfig = globalConfig;
     }
 
+    @SaIgnore
+    @SneakyThrows
     @RequestMapping("/register")
     public JSONObject register(@RequestParam String answer) {
         JSONObject result = new JSONObject();
 
         if (!Objects.equals(globalConfig.getAnswer(), answer)) {
-            result.put("success", false);
-            result.put("msg", "回答错误，无法进入网站");
-            result.put("body", new JSONObject());
-            return result;
+            throw new KeyException("回答错误，无法进入网站");
         }
 
         if (globalConfig.getAdminKey().equals(answer)) {
@@ -58,26 +64,18 @@ public class UserRestController {
         return result;
     }
 
+    @SaCheckLogin
+    @SneakyThrows
     @RequestMapping("/changeNickname")
     public JSONObject changeNickname(@RequestParam String newName) {
         JSONObject result = new JSONObject();
 
         if (newName == null || newName.isEmpty()) {
-            result.put("success", false);
-            result.put("msg", "昵称不能为空");
-            return result;
-        }
-
-        if (!StpUtil.isLogin()) {
-            result.put("success", false);
-            result.put("msg", "未登录");
-            return result;
+            throw new InvalidParameterException("昵称不能为空");
         }
 
         if (userMapper.selectOneByCondition(Tables.USER.NICKNAME.eq(newName)) != null) {
-            result.put("success", false);
-            result.put("msg", "昵称重复");
-            return result;
+            throw new FileAlreadyExistsException("昵称重复");
         }
 
         if (newName.length() > 10) {
