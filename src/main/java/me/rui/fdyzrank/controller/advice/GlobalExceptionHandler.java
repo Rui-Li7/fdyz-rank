@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 @ControllerAdvice
-@Log
+@Log4j2
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public void globalException(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
@@ -24,6 +25,6 @@ public class GlobalExceptionHandler {
         response.setContentType("application/json; charset=utf-8");
         response.getWriter().println(result.toJSONString());
         response.getWriter().flush();
-        log.log(Level.SEVERE, result.toJSONString(), e);
+        log.warn(result.toJSONString(), e);
     }
 }
