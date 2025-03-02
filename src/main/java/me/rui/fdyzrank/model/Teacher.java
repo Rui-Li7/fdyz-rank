@@ -15,4 +15,5 @@ public class Teacher {
     private String subject;
     private long classId;
     private int score;
+    private int voteCount;
 }
