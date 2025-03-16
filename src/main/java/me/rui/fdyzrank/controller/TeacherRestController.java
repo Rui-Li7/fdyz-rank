@@ -6,14 +6,14 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.query.QueryWrapper;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.rui.fdyzrank.mapper.ScoreMapper;
 import me.rui.fdyzrank.mapper.TeacherMapper;
 import me.rui.fdyzrank.model.Score;
 import me.rui.fdyzrank.model.Teacher;
 import me.rui.fdyzrank.model.table.Tables;
-import org.apache.catalina.security.SecurityUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import me.rui.fdyzrank.service.ScoreService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,15 +25,11 @@ import java.security.InvalidParameterException;
 
 @RestController
 @RequestMapping("/teacher")
+@RequiredArgsConstructor
 public class TeacherRestController {
     private final TeacherMapper teacherMapper;
     private final ScoreMapper scoreMapper;
-
-    @Autowired
-    public TeacherRestController(TeacherMapper teacherMapper, ScoreMapper scoreMapper) {
-        this.teacherMapper = teacherMapper;
-        this.scoreMapper = scoreMapper;
-    }
+    private final ScoreService scoreService;
 
     @SaCheckLogin
     @SneakyThrows
@@ -54,16 +50,12 @@ public class TeacherRestController {
                 Tables.SCORE.USER_ID.eq(StpUtil.getLoginIdAsLong())
                         .and(Tables.SCORE.TEACHER_ID.eq(teacherId))
         );
-        if (teacherMapper.selectOneByQuery(queryWrapper) != null) {
+        if (scoreMapper.selectOneByQuery(queryWrapper) != null) {
             throw new FileAlreadyExistsException("您已投过票");
         }
 
         JSONObject result = new JSONObject();
-        Score score = new Score();
-        score.setTeacherId(teacherId);
-        score.setScore(scoreNum);
-        score.setUserId(StpUtil.getLoginIdAsLong());
-        scoreMapper.insert(score);
+        scoreService.vote(new Score(StpUtil.getLoginIdAsLong(), teacherId, scoreNum));
         result.put("success", true);
         result.put("msg", "投票成功");
         return result;

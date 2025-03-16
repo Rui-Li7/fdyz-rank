@@ -4,6 +4,8 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Table("teacher")
 public class Teacher {
@@ -14,6 +16,6 @@ public class Teacher {
     private String name;
     private String subject;
     private long classId;
-    private int score;
-    private int voteCount;
+    private BigDecimal score = BigDecimal.ZERO;
+    private int voteCount = 0;
 }

@@ -1,14 +1,11 @@
 package me.rui.fdyzrank.controller;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson2.JSONObject;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.rui.fdyzrank.FdyzRankConfig;
-import me.rui.fdyzrank.mapper.ScoreMapper;
-import me.rui.fdyzrank.mapper.TeacherMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import me.rui.fdyzrank.service.ScoreService;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,17 +16,10 @@ import java.security.InvalidParameterException;
 
 @RestController
 @RequestMapping("/score")
+@RequiredArgsConstructor
 public class ScoreRestController {
     private final FdyzRankConfig fdyzRankConfig;
-    private final ScoreMapper scoreMapper;
-    private final TeacherMapper teacherMapper;
-
-    @Autowired
-    public ScoreRestController(FdyzRankConfig fdyzRankConfig, ScoreMapper scoreMapper, TeacherMapper teacherMapper) {
-        this.fdyzRankConfig = fdyzRankConfig;
-        this.scoreMapper = scoreMapper;
-        this.teacherMapper = teacherMapper;
-    }
+    private final ScoreService scoreService;
 
     @SaIgnore
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -41,6 +31,10 @@ public class ScoreRestController {
             throw new InvalidParameterException("密钥错误");
         }
 
-
+        scoreService.update();
+        JSONObject result = new JSONObject();
+        result.put("success", true);
+        result.put("msg","更新成功");
+        return result;
     }
 }
