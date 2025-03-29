@@ -1,6 +1,7 @@
 package me.rui.fdyzrank.service.impl;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.row.Db;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import me.rui.fdyzrank.mapper.ScoreMapper;
@@ -9,7 +10,10 @@ import me.rui.fdyzrank.model.Score;
 import me.rui.fdyzrank.model.Teacher;
 import me.rui.fdyzrank.model.table.Tables;
 import me.rui.fdyzrank.service.ScoreService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,12 +21,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 @Service("ScoreServiceMysql")
-@RequiredArgsConstructor
-public class ScoreServiceMysqlImpl implements ScoreService {
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class ScoreServiceImpl implements ScoreService {
     private final ScoreMapper scoreMapper;
     private final TeacherMapper teacherMapper;
 
@@ -34,23 +37,30 @@ public class ScoreServiceMysqlImpl implements ScoreService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public int update() {
-        AtomicInteger c = new AtomicInteger();
+        int total_count = 0;
         Map<Long, Set<Score>> scoreMap = new HashMap<>();
-        scoreMapper.selectListByQuery(new QueryWrapper().where(Tables.SCORE.VERIFIED.eq(false)))
-                .forEach(score -> {
-            if (!scoreMap.containsKey(score.getTeacherId())) {
-                scoreMap.put(score.getTeacherId(), new HashSet<>());
-            }
-            scoreMap.get(score.getTeacherId()).add(score);
-        });
+        Set<Score> verifiedScore = new HashSet<>();
 
-        scoreMap.forEach((teacherId, scores) -> {
+        // 获取未验证的score
+        for (Score score : scoreMapper.selectListByQuery(QueryWrapper.create().where(Tables.SCORE.VERIFIED.eq(false)))) {
+            scoreMap.computeIfAbsent(score.getTeacherId(), _ -> new HashSet<>()).add(score);
+        }
+
+        for (Map.Entry<Long, Set<Score>> entry : scoreMap.entrySet()) {
+            Long teacherId = entry.getKey();
+            Set<Score> scores = entry.getValue();
+            Teacher teacher = teacherMapper.selectOneById(teacherId);
+
+            if (teacher == null) {
+                continue;
+            }
+
             BigDecimal sum = BigDecimal.valueOf(scores.stream()
                     .mapToInt(Score::getScore)
                     .sum());
 
-            Teacher teacher = teacherMapper.selectOneById(teacherId);
             BigDecimal count = BigDecimal.valueOf(scores.size() + teacher.getVoteCount());
             teacher.setScore(
                     teacher.getScore()
@@ -61,9 +71,12 @@ public class ScoreServiceMysqlImpl implements ScoreService {
             );
             teacher.setVoteCount(count.intValue());
             teacherMapper.update(teacher);
-            c.addAndGet(scores.size());
-        });
-        log.info("Score表执行update业务，受影响行数{}", c.get());
-        return c.get();
+            total_count += count.intValue();
+            scores.forEach(score -> score.setVerified(true));
+            verifiedScore.addAll(scores);
+        }
+        Db.updateEntitiesBatch(verifiedScore);
+        log.info("Score表执行update业务，受影响行数{}", total_count);
+        return total_count;
     }
 }

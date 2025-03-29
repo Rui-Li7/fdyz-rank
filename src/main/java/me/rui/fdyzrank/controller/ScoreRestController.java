@@ -7,8 +7,6 @@ import lombok.SneakyThrows;
 import me.rui.fdyzrank.FdyzRankConfig;
 import me.rui.fdyzrank.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +21,6 @@ public class ScoreRestController {
     private final ScoreService scoreService;
 
     @SaIgnore
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @SneakyThrows
     @RequestMapping("/update")
     public JSONObject update(@RequestParam String updateKey) {
