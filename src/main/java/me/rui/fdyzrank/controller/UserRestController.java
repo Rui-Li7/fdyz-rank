@@ -6,6 +6,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSONObject;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.rui.fdyzrank.FdyzRankConfig;
 import me.rui.fdyzrank.mapper.UserMapper;
@@ -23,15 +24,10 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserRestController {
     private final UserMapper userMapper;
     private final FdyzRankConfig globalConfig;
-
-    @Autowired
-    public UserRestController(UserMapper userMapper, FdyzRankConfig globalConfig) {
-        this.userMapper = userMapper;
-        this.globalConfig = globalConfig;
-    }
 
     @SaIgnore
     @SneakyThrows

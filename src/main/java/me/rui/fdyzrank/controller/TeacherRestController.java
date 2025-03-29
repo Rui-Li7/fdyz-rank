@@ -14,6 +14,7 @@ import me.rui.fdyzrank.model.Score;
 import me.rui.fdyzrank.model.Teacher;
 import me.rui.fdyzrank.model.table.Tables;
 import me.rui.fdyzrank.service.ScoreService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,7 @@ import java.security.InvalidParameterException;
 
 @RestController
 @RequestMapping("/teacher")
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TeacherRestController {
     private final TeacherMapper teacherMapper;
     private final ScoreMapper scoreMapper;

@@ -1,6 +1,7 @@
 package me.rui.fdyzrank.manager;
 
 import cn.dev33.satoken.stp.StpInterface;
+import lombok.RequiredArgsConstructor;
 import me.rui.fdyzrank.mapper.PermissionMapper;
 import me.rui.fdyzrank.mapper.UserMapper;
 import me.rui.fdyzrank.model.Permission;
@@ -13,15 +14,10 @@ import java.io.Serializable;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class PermissionManager implements StpInterface {
     private final PermissionMapper permissionMapper;
     private final UserMapper userMapper;
-
-    @Autowired
-    public PermissionManager(PermissionMapper permissionMapper, UserMapper userMapper) {
-        this.permissionMapper = permissionMapper;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
