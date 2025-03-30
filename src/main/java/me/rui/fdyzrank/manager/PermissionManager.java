@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -21,6 +23,15 @@ public class PermissionManager implements StpInterface {
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
+        if (!(loginId instanceof String)) {
+             throw new InvalidParameterException("错误的ID类型");
+        }
+        if (loginId == "0") {
+            List<String> list = new ArrayList<>();
+            list.add("*");
+            return list;
+        }
+
         Permission permission = new Permission(Long.parseLong((String) loginId), "user.*");
         List<Permission> permissions = permissionMapper.selectListByCondition(Tables.PERMISSION.USER_ID.eq(loginId));
         if (!permissions.contains(permission)) {

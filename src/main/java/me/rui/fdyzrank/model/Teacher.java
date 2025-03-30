@@ -16,8 +16,6 @@ public class Teacher {
     private boolean isMale;
     private String name;
     private String subject;
-    @RelationManyToOne(selfField = "classId")
-    private Class clazz;
     private long classId;
     private BigDecimal score = BigDecimal.ZERO;
     private int voteCount = 0;

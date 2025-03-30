@@ -35,15 +35,15 @@ public class UserRestController {
     public JSONObject register(@RequestParam String answer) {
         JSONObject result = new JSONObject();
 
-        if (!Objects.equals(globalConfig.getAnswer(), answer)) {
-            throw new KeyException("回答错误，无法进入网站");
-        }
-
         if (globalConfig.getAdminKey().equals(answer)) {
             result.put("success", true);
             result.put("msg", "进入管理员账号");
             StpUtil.login(globalConfig.getAdminId());
             return result;
+        }
+
+        if (!Objects.equals(globalConfig.getAnswer(), answer)) {
+            throw new KeyException("回答错误，无法进入网站");
         }
 
         User user = new User();

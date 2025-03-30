@@ -4,12 +4,14 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.rui.fdyzrank.mapper.ScoreMapper;
 import me.rui.fdyzrank.mapper.TeacherMapper;
+import me.rui.fdyzrank.model.Class;
 import me.rui.fdyzrank.model.Score;
 import me.rui.fdyzrank.model.Teacher;
 import me.rui.fdyzrank.model.table.Tables;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.InvalidParameterException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/teacher")
@@ -96,6 +99,45 @@ public class TeacherRestController {
         teacherMapper.insert(teacher);
         result.put("success", true);
         result.put("msg","创建成功");
+        return result;
+    }
+
+    @SaCheckLogin
+    @SneakyThrows
+    @SaCheckPermission("teacher.get")
+    @RequestMapping("/get/all")
+    public JSONObject getBatch(@RequestParam Class.Grade grade) {
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper
+                .select(Tables.TEACHER.ALL_COLUMNS)
+                .from(Tables.CLASS)
+                .where(Tables.CLASS.GRADE.eq(grade))
+                // 子查询
+                .leftJoin(Tables.TEACHER).on(Tables.TEACHER.CLASS_ID.eq(Tables.CLASS.ID));
+
+        List<Teacher> list = teacherMapper.selectListByQuery(queryWrapper);
+        JSONObject result = new JSONObject();
+        result.put("success", true);
+        result.put("body", new JSONArray(list));
+        return result;
+    }
+
+    @SaCheckLogin
+    @SneakyThrows
+    @SaCheckPermission("teacher.get")
+    @RequestMapping("/get/{id}")
+    public JSONObject get(@PathVariable long id, @RequestParam(defaultValue = "false") boolean isGlobal) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if (isGlobal) {
+            queryWrapper.where(Tables.TEACHER.GLOBAL_ID.eq(id));
+        } else {
+            queryWrapper.where(Tables.TEACHER.ID.eq(id));
+        }
+        Teacher teacher = teacherMapper.selectOneByQuery(queryWrapper);
+        JSONObject result = new JSONObject();
+        result.put("success", true);
+        result.put("body", teacher);
         return result;
     }
 }
