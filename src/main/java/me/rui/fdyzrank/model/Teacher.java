@@ -1,6 +1,7 @@
 package me.rui.fdyzrank.model;
 
 import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.RelationManyToOne;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
@@ -15,6 +16,8 @@ public class Teacher {
     private boolean isMale;
     private String name;
     private String subject;
+    @RelationManyToOne(selfField = "classId")
+    private Class clazz;
     private long classId;
     private BigDecimal score = BigDecimal.ZERO;
     private int voteCount = 0;
