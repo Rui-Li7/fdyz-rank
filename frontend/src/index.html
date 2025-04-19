@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body>
+<div class="m-5 animate__animated animate__fadeInRight" style="text-align: center">
+    <h1 class="text-4xl m-5">
+        访问密钥
+    </h1>
+    <p class="text-sm mx-5 text-gray-500">
+        密码提示: blalbalba
+    </p>
+    <label>
+        <input type="text" id="access_key" class="border-2 border-solid m-5 rounded-sm px-4 py-1">
+    </label>
+    <button onclick="alert(
+        document.getElementById('access_key').value
+    )" class="border-2 border-solid px-4 py-1">
+        确认
+    </button>
+</div>
+</body>
+</html>
