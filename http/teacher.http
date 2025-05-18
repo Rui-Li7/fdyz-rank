@@ -1,0 +1,11 @@
+### submit teacher
+POST http://localhost:8080/teacher/submit
+Content-Type: application/json
+
+{
+  "male": true,
+  "classId": 1,
+  "subject": "sadasf",
+  "name": "dfgdfg"
+}
+###

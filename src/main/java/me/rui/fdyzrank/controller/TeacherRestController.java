@@ -17,10 +17,7 @@ import me.rui.fdyzrank.model.Teacher;
 import me.rui.fdyzrank.model.table.Tables;
 import me.rui.fdyzrank.service.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
@@ -51,7 +48,8 @@ public class TeacherRestController {
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.where(
-                Tables.SCORE.USER_ID.eq(StpUtil.getLoginIdAsLong())
+                Tables.SCORE.USER_ID
+                        .eq(StpUtil.getLoginIdAsLong())
                         .and(Tables.SCORE.TEACHER_ID.eq(teacherId))
         );
         if (scoreMapper.selectOneByQuery(queryWrapper) != null) {
@@ -135,6 +133,31 @@ public class TeacherRestController {
             queryWrapper.where(Tables.TEACHER.ID.eq(id));
         }
         Teacher teacher = teacherMapper.selectOneByQuery(queryWrapper);
+        JSONObject result = new JSONObject();
+        result.put("success", true);
+        result.put("body", teacher);
+        return result;
+    }
+    @SaCheckLogin
+    @SaCheckPermission("teacher.submit")
+    @SneakyThrows
+    @RequestMapping("/submit")
+    public JSONObject submit(@RequestBody Teacher teacher) {
+        if (teacher.getName() == null || teacher.getName().isEmpty()) {
+            throw new InvalidParameterException("教师名字有误");
+        }
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.where(Tables.TEACHER.CLASS_ID
+                .eq(teacher.getClassId())
+                .and(Tables.TEACHER.SUBJECT.eq(teacher.getSubject()))
+        );
+        if (teacherMapper.selectOneByQuery(queryWrapper) != null) {
+            throw new FileAlreadyExistsException("该老师已存在");
+        }
+        teacher.setId(IdUtil.getSnowflakeNextId());
+        teacher.setGlobalId(IdUtil.getSnowflakeNextId());
+        teacherMapper.insert(teacher);
         JSONObject result = new JSONObject();
         result.put("success", true);
         result.put("body", teacher);
