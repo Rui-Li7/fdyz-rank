@@ -12,4 +12,5 @@ public class FdyzRankConfig {
     private String adminKey;
     private long adminId;
     private String updateKey;
+    private int classCount;
 }

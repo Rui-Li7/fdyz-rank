@@ -61,21 +61,26 @@ public class ScoreServiceImpl implements ScoreService {
                     .mapToInt(Score::getScore)
                     .sum());
 
-            BigDecimal count = BigDecimal.valueOf(scores.size() + teacher.getVoteCount());
+            teacher.setVoteCount(teacher.getVoteCount() + scores.size());
             teacher.setScore(
-                    teacher.getScore()
-                            .multiply(new BigDecimal(teacher.getVoteCount()))
-                            .setScale(0, RoundingMode.HALF_UP)
-                            .add(sum)
-                            .divide(count, 2, RoundingMode.HALF_UP)
+                    teacher.getScore().add(sum)
             );
-            teacher.setVoteCount(count.intValue());
             teacherMapper.update(teacher);
-            total_count += count.intValue();
+            total_count += 1;
+            total_count += scores.size();
             scores.forEach(score -> score.setVerified(true));
             verifiedScore.addAll(scores);
         }
-        Db.updateEntitiesBatch(verifiedScore);
+        for (Score score : verifiedScore) {
+            scoreMapper.updateByQuery(score,
+                    QueryWrapper.create()
+                            .where(
+                                    Tables.SCORE.TEACHER_ID.eq(score.getTeacherId())
+                                    .and(Tables.SCORE.USER_ID.eq(score.getUserId()))
+                                    .and(Tables.SCORE.SCORE.eq(score.getScore()))
+                            )
+            );
+        }
         log.info("Score表执行update业务，受影响行数{}", total_count);
         return total_count;
     }
