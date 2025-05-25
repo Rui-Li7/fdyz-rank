@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>CN-DATA - Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./index.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body class="bg-cover text-center bg-zinc-900 text-slate-200 font-semibold">
+<div class="grid grid-cols-1 md:grid-cols-4 min-h-screen">
+  <div id="search_container" style="background-color: rgba(23, 23, 23, 0.8)" class="md:col-span-1 m-10 px-4 py-8 rounded-md animate__animated animate__slideInDown">
+    <label id="search_block" class="block">
+      <span id="u-p_login_text" class="block m-5 text-1xl font-medium">查询</span>
+      <input type="text" id="name" class="w-3/4 px-3 m-5 py-2 text-slate-200 bg-zinc-900 border border-slate-600 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:duration-150 focus:ring-1 rounded-md" placeholder="姓名">
+      <input type="text" id="region" class="w-3/4 px-3 m-5 py-2 text-slate-200 bg-zinc-900 border border-slate-600 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:duration-150 focus:ring-1 rounded-md" placeholder="地区">
+    </label>
+    <button id="submit" class="bg-sky-500 hover:bg-sky-700 hover:duration-150 px-5 m-5 py-2 text-1xl leading-5 rounded-full">提交</button>
+
+    <a id="reverse_btn" class="absolute bottom-2 right-2 select-none text-1xl"></a>
+  </div>
+
+  <div id="result_container" style="background-color: rgba(23, 23, 23, 0.8)" class="grid place-items-center md:col-span-3 m-10 px-4 py-8 rounded-md animate__animated animate__slideInDown">
+    <a class="text-3xl" href="/login">(っ °Д °;)っ未登录, 点击此处跳转登录界面</a>
+    <span class="hidden text-3xl">当前不存在搜索结果~(￣▽￣)~，在左侧试试输入条件搜索吧</span>
+  </div>
+</div>
+
+<div id="toast_container" class="px-5 py-2 rounded-xl fixed top-2 left-0 right-0 w-1/6 mx-auto text-center hidden">
+  <div style="background-color: rgba(23, 23, 23)" class="border-l-4 border-slate-600 text-slate-300 p-4 rounded shadow-md" role="alert">
+    <p id="msg" class="font-bold">Info</p>
+  </div>
+</div>
+<script>
+  // 确认按键处理
+  document.getElementById('submit').addEventListener('click', () => {
+
+  })
+</script>
+
+<script>
+  // Utils
+  function showToast(message) {
+    const toastContainer = document.getElementById('toast_container');
+    const toastMessage = document.getElementById('msg');
+    toastMessage.textContent = message;
+
+    toastContainer.classList.remove('hidden');
+    toastContainer.style.display = 'block';
+    toastContainer.classList.remove('animate__animated');
+    toastContainer.classList.remove('animate__fadeOut');
+    toastContainer.classList.add('animate__animated');
+    toastContainer.classList.add('animate__bounceInDown');
+
+    setTimeout(() => {
+      toastContainer.classList.remove('animate__animated');
+      toastContainer.classList.remove('animate__bounceInDown');
+      toastContainer.classList.add('animate__animated');
+      toastContainer.classList.add('animate__fadeOut');
+    }, 3000);
+  }
+</script>
+
+<script>
+  const imgUrl = ['https://s2.loli.net/2024/12/21/csgMNJuiElUICyR.jpg',
+    'https://s2.loli.net/2024/12/21/fnokc7Bz1A4Fvgb.jpg',
+    'https://s2.loli.net/2024/12/21/hciUqZVvNCtGlrH.jpg',
+    'https://s2.loli.net/2024/12/21/VMaSzQCvidc6mKY.jpg',
+    'https://s2.loli.net/2024/12/21/Sz3fr72YBQUh1Dv.jpg',
+    'https://s2.loli.net/2024/12/21/8h9kUXYCLaJ6AOr.jpg',
+    'https://s2.loli.net/2024/12/21/JNQAKEdij7T8M3Z.jpg',
+    'https://s2.loli.net/2024/12/21/UQy7P2YER3baMn6.jpg',
+    'https://s2.loli.net/2024/12/21/iynVz9qHhlvf8pe.jpg']
+  document.addEventListener('DOMContentLoaded', () => {
+    // 随机背景
+    document.body.style.backgroundImage = "url(" + imgUrl[Math.floor(Math.random() * imgUrl.length)] + ")";
+
+    fetch('https://api.cn-data.net/login/check', {
+      method: 'GET',
+      accept: 'application/json',
+      credentials: 'include',
+    })
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error(res.status + ': ' + res.statusText)
+              }
+              return res.json();
+            })
+            .then((data) => {
+              if (data['success']) {
+
+              } else {
+
+              }
+            })
+            .catch((err) => {
+              showToast(err)
+            })
+  })
+</script>
+</body>
+</html>
