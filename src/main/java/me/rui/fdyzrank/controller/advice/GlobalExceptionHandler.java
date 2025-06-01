@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
         result.put("msg", e.getMessage());
         result.put("cookies", request.getCookies());
 
+        response.setStatus(500);
         response.setContentType("application/json; charset=utf-8");
         response.getWriter().println(result.toJSONString());
         response.getWriter().flush();
